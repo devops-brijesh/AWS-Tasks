@@ -1,3 +1,8 @@
+We can mount an S3 bucket onto an AWS instance as a file system known as S3fs. 
+It is a FUSE filesystem application backed by amazon web services, that allows you to mount an Amazon S3 bucket as a local file-system.
+We can use system commands with this drive just like as any other Hard Disk in the system. 
+On s3fs mounted files systems we can simply use cp, mv and ls the basic Unix commands similar to run on locally attached disks.
+
 Follow the below steps to mount your S3 bucket to Your Linux Instance.
 
 For Amazon Linux EC2 Instance
