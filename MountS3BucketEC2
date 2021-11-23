@@ -1,0 +1,72 @@
+We can mount an S3 bucket onto an AWS instance as a file system known as S3fs. 
+It is a FUSE filesystem application backed by amazon web services, that allows you to mount an Amazon S3 bucket as a local file-system.
+We can use system commands with this drive just like as any other Hard Disk in the system. 
+On s3fs mounted files systems we can simply use cp, mv and ls the basic Unix commands similar to run on locally attached disks.
+
+Follow the below steps to mount your S3 bucket to Your Linux Instance.
+
+For Amazon Linux EC2 Instance
+
+# sudo yum update
+# sudo amazon-linux-extras install epel -y
+# yum install s3fs-fuse.x86_64 -y
+
+For Ubuntu EC2 Instance
+
+# sudo apt-get update
+# sudo apt-get install s3fs -y 
+
+You can mount S3 bucket using IAM Role or using Secret and Access Key
+
+Policy to be attached with Instance IAM Role
+{
+ “Version”: “2012–10–17”,
+ “Statement”: [
+ {
+ “Effect”: “Allow”,
+ “Action”: [
+ “s3:GetBucketLocation”,
+ “s3:ListAllMyBuckets”
+ ],
+ “Resource”: “arn:aws:s3:::*”
+ },
+ {
+ “Effect”: “Allow”,
+ “Action”: [“s3:ListBucket”],
+ “Resource”: [“arn:aws:s3:::<bucketname>”]
+ },
+ {
+ “Effect”: “Allow”,
+ “Action”: [
+ “s3:PutObject”,
+ “s3:GetObject”,
+ “s3:DeleteObject”
+ ],
+ “Resource”: [“arn:aws:s3:::<bucketname>/*”]
+ }
+ ]
+}
+
+Command to mount the S3 bucket
+
+# s3fs -o iam_role="$IAMRole" -o url="https://s3-<region>.amazonaws.com" -o endpoint=ap-south-1 -o dbglevel=info -o curldbg -o allow_other -o use_cache=/tmp <bucketname> <mointpoint>
+
+Using Access and Secret Keys
+
+Create a new file in /etc with the name passwd-s3fs and Paste the access key and secret key in the below format .
+
+# touch /etc/passwd-s3fs
+# vim /etc/passwd-s3fs
+
+Paste your access and secret key with below format
+Your_accesskey:Your_secretkey
+
+# sudo chmod 640 /etc/passwd-s3fs
+
+Now use below command to Mount the bucket 
+# s3fs <bucketname> -o use_cache=/tmp -o allow_other -o uid=1001 -o mp_umask=002 -o multireq_max=5 <mount point>
+
+
+Thats It !!! Now you can see your S3 bucket bucket is mounted on your mount point.
+
+Thanks 
